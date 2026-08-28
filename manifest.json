@@ -1,0 +1,9 @@
+{
+  "name": "Routine Tracker",
+  "short_name": "Routine",
+  "display": "standalone",
+  "start_url": "./index.html",
+  "theme_color": "#6B46C1",
+  "background_color": "#ffffff",
+  "orientation": "portrait"
+}
