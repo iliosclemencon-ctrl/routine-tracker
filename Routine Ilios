@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Routine Tracker</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="manifest" href="manifest.json">
+</head>
+<body>
+<div id="app"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const {useState}=React;
+const App=()=>{
+  const [tasks,setTasks]=useState([
+    {id:1,emoji:'🪥',text:'Brossage dents',done:false,cat:'matin'},
+    {id:2,emoji:'🚿',text:'Douche/Piscine',done:false,cat:'matin'},
+    {id:3,emoji:'✨',text:'Skincare',done:false,cat:'matin'},
+    {id:4,emoji:'🥣',text:'Petit-déj',done:false,cat:'matin'},
+    {id:5,emoji:'💧',text:'2L eau',done:false,cat:'jour'},
+    {id:6,emoji:'🍽️',text:'Déjeuner',done:false,cat:'jour'},
+    {id:7,emoji:'🥚',text:'Protéine',done:false,cat:'jour'},
+    {id:8,emoji:'💪',text:'10 pompes',done:false,cat:'jour'},
+    {id:9,emoji:'🎸',text:'Guitare',done:false,cat:'apres'},
+    {id:10,emoji:'📚',text:'Apprentissage',done:false,cat:'apres'},
+    {id:11,emoji:'🏃',text:'Sport 5km',done:false,cat:'apres'},
+    {id:12,emoji:'📖',text:'Lecture',done:false,cat:'bonus',pts:10},
+    {id:13,emoji:'✏️',text:'Réviser',done:false,cat:'bonus',pts:15},
+    {id:14,emoji:'🍲',text:'Dîner',done:false,cat:'soir'},
+    {id:15,emoji:'👨‍👩‍👦',text:'Famille',done:false,cat:'soir'},
+    {id:16,emoji:'❤️',text:'Compliment',done:false,cat:'soir'},
+    {id:17,emoji:'😇',text:'Honnêteté',done:false,cat:'soir'},
+    {id:18,emoji:'📵',text:'1h sans tel',done:false,cat:'dodo'},
+    {id:19,emoji:'🌙',text:'Avant minuit',done:false,cat:'dodo'},
+    {id:20,emoji:'😴',text:'8-9h sommeil',done:false,cat:'dodo'},
+  ]);
+  const [dark,setDark]=useState(false);
+  const [tab,setTab]=useState('routine');
+  const [pts,setPts]=useState(0);
+  const [note,setNote]=useState('');
+
+  const toggle=(id)=>{
+    const t=tasks.find(x=>x.id===id);
+    if(!t.done&&t.pts)setPts(pts+t.pts);
+    setTasks(tasks.map(x=>x.id===id?{...x,done:!x.done}:x));
+  };
+
+  const done=tasks.filter(t=>t.done).length;
+  const pct=Math.round(done/tasks.length*100);
+
+  return (
+    <div className={dark?'bg-gray-900 text-white':'bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200'} style={{minHeight:'100vh'}}>
+      <div className={dark?'bg-gray-800':'bg-white'} style={{padding:'16px',borderBottom:'4px solid #a855f7',position:'sticky',top:0,zIndex:50}}>
+        <div style={{display:'flex',justifyContent:'space-between',marginBottom:'12px'}}>
+          <h1 style={{fontSize:'24px',fontWeight:'900',margin:0}}>🎯 ROUTINE</h1>
+          <button onClick={()=>setDark(!dark)} style={{padding:'8px 12px',borderRadius:'50%',background:'#a855f7',border:'none',color:'white',fontSize:'18px',cursor:'pointer'}}>
+            {dark?'☀️':'🌙'}
+          </button>
+        </div>
+        <div style={{marginBottom:'8px',fontWeight:'bold'}}>{done}/20 • ⭐ {pts}pts</div>
+        <div style={{width:'100%',height:'12px',background:'#ddd',borderRadius:'6px',overflow:'hidden',border:'2px solid #a855f7'}}>
+          <div style={{height:'100%',width:pct+'%',background:'linear-gradient(to right, #ec4899, #a855f7, #3b82f6)',transition:'width 0.3s'}}></div>
+        </div>
+        <div style={{textAlign:'center',fontWeight:'bold',marginTop:'4px'}}>{pct}% 🔥</div>
+      </div>
+
+      <div style={{display:'flex',gap:'8px',padding:'12px 16px',borderBottom:'2px solid #a855f7',position:'sticky',top:80,zIndex:40,background:dark?'#111827':'white',overflowX:'auto'}}>
+        <button onClick={()=>setTab('routine')} style={{padding:'8px 16px',borderRadius:'20px',fontWeight:'bold',border:'none',cursor:'pointer',background:tab==='routine'?'linear-gradient(to right, #ec4899, #a855f7)':'#f3f4f6',color:tab==='routine'?'white':'#333',whiteSpace:'nowrap'}}>📋 Routine</button>
+        <button onClick={()=>setTab('stats')} style={{padding:'8px 16px',borderRadius:'20px',fontWeight:'bold',border:'none',cursor:'pointer',background:tab==='stats'?'linear-gradient(to right, #ec4899, #a855f7)':'#f3f4f6',color:tab==='stats'?'white':'#333',whiteSpace:'nowrap'}}>📊 Stats</button>
+      </div>
+
+      <div style={{padding:'16px',paddingBottom:'100px'}}>
+        {tab==='routine'&&(
+          <>
+            {['matin','jour','apres','bonus','soir','dodo'].map(cat=>{
+              const emojis={matin:'🌅',jour:'🌤️',apres:'🎸',bonus:'⭐',soir:'🌙',dodo:'🛏️'};
+              const names={matin:'Matin',jour:'Journée',apres:'Après École',bonus:'Bonus',soir:'Soir',dodo:'Avant Dodo'};
+              return (
+                <div key={cat} style={{marginBottom:'24px'}}>
+                  <h2 style={{fontSize:'18px',fontWeight:'900',margin:'0 0 12px'}}>{emojis[cat]} {names[cat]}</h2>
+                  <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
+                    {tasks.filter(t=>t.cat===cat).map(t=>(
+                      <button key={t.id} onClick={()=>toggle(t.id)} style={{padding:'12px',borderRadius:'8px',border:'3px solid #a855f7',background:t.done?'#22c55e':'white',color:t.done?'white':'#333',fontWeight:'bold',cursor:'pointer',textAlign:'left',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                        <span style={{display:'flex',alignItems:'center',gap:'8px'}}><span style={{fontSize:'20px'}}>{t.emoji}</span>{t.text}</span>
+                        <span>{t.done?'✅':'⭕'}{t.pts?' +'+t.pts:''}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{background:dark?'#374151':'#fce7f3',borderRadius:'8px',padding:'12px',marginTop:'16px'}}>
+              <p style={{margin:'0 0 8px',fontWeight:'bold'}}>📝 Note</p>
+              <textarea value={note} onChange={(e)=>setNote(e.target.value)} style={{width:'100%',height:'80px',borderRadius:'6px',border:'1px solid #a855f7',padding:'8px',background:dark?'#4b5563':'white',color:dark?'white':'black',fontFamily:'inherit',fontWeight:'bold'}} placeholder="Tes notes..."/>
+            </div>
+          </>
+        )}
+        {tab==='stats'&&(
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px'}}>
+            <div style={{background:'#ec4899',color:'white',borderRadius:'8px',padding:'16px',textAlign:'center'}}>
+              <p style={{fontSize:'32px',fontWeight:'900',margin:0}}>{done}/20</p>
+              <p style={{fontSize:'12px',fontWeight:'bold',margin:0}}>Tâches</p>
+            </div>
+            <div style={{background:'#a855f7',color:'white',borderRadius:'8px',padding:'16px',textAlign:'center'}}>
+              <p style={{fontSize:'32px',fontWeight:'900',margin:0}}>{pct}%</p>
+              <p style={{fontSize:'12px',fontWeight:'bold',margin:0}}>Complété</p>
+            </div>
+            <div style={{background:'#eab308',color:'white',borderRadius:'8px',padding:'16px',textAlign:'center'}}>
+              <p style={{fontSize:'32px',fontWeight:'900',margin:0}}>{pts}</p>
+              <p style={{fontSize:'12px',fontWeight:'bold',margin:0}}>Points</p>
+            </div>
+            <div style={{background:'#22c55e',color:'white',borderRadius:'8px',padding:'16px',textAlign:'center'}}>
+              <p style={{fontSize:'32px',fontWeight:'900',margin:0}}>🔥</p>
+              <p style={{fontSize:'12px',fontWeight:'bold',margin:0}}>Motivé!</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+ReactDOM.createRoot(document.getElementById('app')).render(<App/>);
+</script>
+</body>
+</html>
